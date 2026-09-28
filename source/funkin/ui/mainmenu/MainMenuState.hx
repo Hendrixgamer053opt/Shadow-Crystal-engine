@@ -11,6 +11,7 @@ import flixel.effects.FlxFlicker;
 import flixel.math.FlxPoint;
 import flixel.util.typeLimit.NextState;
 import flixel.util.FlxColor;
+import openfl.geom.Rectangle;
 import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinCamera;
 import funkin.audio.FunkinSound;
@@ -52,6 +53,7 @@ class MainMenuState extends MusicBeatState
   var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
   var bg:Null<FlxSprite>;
   var magenta:FlxSprite;
+  var checkerboard:FlxSprite;
   var camFollow:FlxObject;
   #if mobile
   var gyroPan:Null<FlxPoint>;
@@ -122,6 +124,33 @@ class MainMenuState extends MusicBeatState
     bg.updateHitbox();
     bg.screenCenter();
     add(bg);
+
+    // Shadow Crystal checkerboard overlay.
+    // It is generated at runtime, so no extra image asset is required.
+    checkerboard = new FlxSprite();
+    var checkerSize:Int = 64;
+    var checkerWidth:Int = Std.int(bg.width);
+    var checkerHeight:Int = Std.int(bg.height);
+    checkerboard.makeGraphic(checkerWidth, checkerHeight, FlxColor.TRANSPARENT, true);
+
+    for (row in 0...Std.int(Math.ceil(checkerHeight / checkerSize)))
+    {
+      for (col in 0...Std.int(Math.ceil(checkerWidth / checkerSize)))
+      {
+        if ((row + col) % 2 == 0)
+        {
+          checkerboard.pixels.fillRect(
+            new Rectangle(col * checkerSize, row * checkerSize, checkerSize, checkerSize),
+            FlxColor.WHITE);
+        }
+      }
+    }
+
+    checkerboard.alpha = 0.10;
+    checkerboard.scrollFactor.copyFrom(bg.scrollFactor);
+    checkerboard.x = bg.x;
+    checkerboard.y = bg.y;
+    add(checkerboard);
 
     add(camFollow);
 
